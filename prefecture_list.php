@@ -69,7 +69,7 @@ $data = findTravelData($prefecture_id);
 </head>
 <body>
     <div class="container my-4">
-        <h1 class="mb-4">入力された旅行データ一覧 (<?= htmlspecialchars($prefectureName, ENT_QUOTES, 'UTF-8') ?>)</h1>
+        <h1 class="mb-4">旅行データ一覧 (<?= htmlspecialchars($prefectureName, ENT_QUOTES, 'UTF-8') ?>)</h1>
         <?php if (!empty($data)): ?>
             <div class="table-responsive">
               <table class="table table-bordered table-striped">
