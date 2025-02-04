@@ -2,7 +2,7 @@
 // prefecture_list.php
 require_once 'db.php';
 
-// 都道府県IDと名称の対応表
+// 都道府県の名称一覧
 $prefectureNames = [
     '1'  => '北海道',
     '2'  => '青森県',
@@ -53,14 +53,13 @@ $prefectureNames = [
     '47' => '沖縄県',
 ];
 
-// GET パラメータから都道府県IDを取得
 $prefecture_id = trim($_GET['prefecture_id'] ?? '');
 if ($prefecture_id === '') {
     die("都道府県IDが指定されていません。");
 }
 $prefectureName = $prefectureNames[$prefecture_id] ?? $prefecture_id;
 
-// 指定した都道府県IDのデータのみ取得
+// 指定した都道府県のデータを取得
 $data = findTravelData($prefecture_id);
 ?>
 <!DOCTYPE html>
@@ -68,39 +67,51 @@ $data = findTravelData($prefecture_id);
 <head>
     <meta charset="UTF-8">
     <title>入力された旅行データ一覧 (<?= htmlspecialchars($prefectureName, ENT_QUOTES, 'UTF-8') ?>)</title>
+    <!-- Bootstrap CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <h1>入力された旅行データ一覧 (<?= htmlspecialchars($prefectureName, ENT_QUOTES, 'UTF-8') ?>)</h1>
-    <?php if (!empty($data)): ?>
-        <table border="1" cellpadding="5">
-            <tr>
-                <th>ID</th>
-                <th>都道府県</th>
-                <th>タイトル</th>
-                <th>説明</th>
-                <th>登録日時</th>
-                <th>更新日時</th>
-            </tr>
-            <?php foreach ($data as $row): ?>
-                <tr>
-                    <td><?= htmlspecialchars($row['id'], ENT_QUOTES, 'UTF-8') ?></td>
-                    <!-- 数字の都道府県IDではなく、対応する名称を表示 -->
-                    <td><?= htmlspecialchars($prefectureNames[$row['prefecture_id']] ?? $row['prefecture_id'], ENT_QUOTES, 'UTF-8') ?></td>
-                    <td><?= htmlspecialchars($row['title'], ENT_QUOTES, 'UTF-8') ?></td>
-                    <td><?= htmlspecialchars($row['description'], ENT_QUOTES, 'UTF-8') ?></td>
-                    <td><?= htmlspecialchars($row['created_at'], ENT_QUOTES, 'UTF-8') ?></td>
-                    <td><?= htmlspecialchars($row['updated_at'], ENT_QUOTES, 'UTF-8') ?></td>
-                </tr>
-            <?php endforeach; ?>
-        </table>
-    <?php else: ?>
-        <p>データは存在しません。</p>
-    <?php endif; ?>
-    <p>
-        <a href="prefecture_input.php?prefecture_id=<?= urlencode($prefecture_id) ?>">データ入力に戻る</a>
-    </p>
-    <p>
-        <a href="index.php">Homeに戻る</a>
-    </p>
+    <div class="container my-4">
+        <h1 class="mb-4">入力された旅行データ一覧 (<?= htmlspecialchars($prefectureName, ENT_QUOTES, 'UTF-8') ?>)</h1>
+        <?php if (!empty($data)): ?>
+            <div class="table-responsive">
+              <table class="table table-bordered table-striped">
+                  <thead class="table-dark">
+                      <tr>
+                          <th>都道府県</th>
+                          <th>場所</th>
+                          <th>内容</th>
+                          <th>URL</th>
+                          <th>登録日時</th>
+                          <th>更新日時</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      <?php foreach ($data as $row): ?>
+                          <tr>
+                              <td><?= htmlspecialchars($prefectureNames[$row['prefecture_id']] ?? $row['prefecture_id'], ENT_QUOTES, 'UTF-8') ?></td>
+                              <td><?= htmlspecialchars($row['title'], ENT_QUOTES, 'UTF-8') ?></td>
+                              <td><?= htmlspecialchars($row['description'], ENT_QUOTES, 'UTF-8') ?></td>
+                              <td>
+                                  <?php if ($row['url']): ?>
+                                    <a href="<?= htmlspecialchars($row['url'], ENT_QUOTES, 'UTF-8') ?>" target="_blank"><?= htmlspecialchars($row['url'], ENT_QUOTES, 'UTF-8') ?></a>
+                                  <?php endif; ?>
+                              </td>
+                              <td><?= htmlspecialchars($row['created_at'], ENT_QUOTES, 'UTF-8') ?></td>
+                              <td><?= htmlspecialchars($row['updated_at'], ENT_QUOTES, 'UTF-8') ?></td>
+                          </tr>
+                      <?php endforeach; ?>
+                  </tbody>
+              </table>
+            </div>
+        <?php else: ?>
+            <div class="alert alert-warning">データは存在しません。</div>
+        <?php endif; ?>
+        <p>
+            <a href="prefecture_input.php?prefecture_id=<?= urlencode($prefecture_id) ?>" class="btn btn-secondary">データ入力に戻る</a>
+        </p>
+    </div>
+    <!-- Bootstrap JS CDN (オプション) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

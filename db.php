@@ -1,7 +1,6 @@
 <?php
-///////////////////////////////////////
-// データベース接続していくぅ
-///////////////////////////////////////
+// db.php
+
 define('DB_HOST', 'localhost');
 define('DB_USER', 'root');
 define('DB_PASSWORD', 'root');
@@ -12,8 +11,7 @@ define('DB_NAME', 'tra-nkou');
  *
  * @return mysqli
  */
-function getDBConnection()
-{
+function getDBConnection() {
     $mysqli = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
     if ($mysqli->connect_errno) {
         die('MySQLの接続に失敗しました。：' . $mysqli->connect_error);
@@ -24,30 +22,27 @@ function getDBConnection()
 /**
  * 旅行情報の入力データを新規登録する
  *
- * @param array
+ * @param array $data
  * @return bool
  */
-function createTravelData(array $data)
-{
+function createTravelData(array $data) {
     $mysqli = getDBConnection();
 
     // テーブル名にハイフンが含まれているのでバッククオートで囲む
-    $query = 'INSERT INTO `travel-trip-nkou` (prefecture_id, title, description) VALUES (?, ?, ?)';
+    $query = 'INSERT INTO `travel-trip-nkou` (prefecture_id, title, description, url) VALUES (?, ?, ?, ?)';
     $statement = $mysqli->prepare($query);
     if (!$statement) {
         die('SQL準備エラー：' . $mysqli->error);
     }
 
-    // プレースホルダに値をバインド（すべて文字列型なので 'sss'）
-    $statement->bind_param('sss', $data['prefecture_id'], $data['title'], $data['description']);
+    // 全て文字列としてバインド
+    $statement->bind_param('ssss', $data['prefecture_id'], $data['title'], $data['description'], $data['url']);
 
-    // クエリ実行
     $response = $statement->execute();
     if ($response === false) {
         echo 'エラーメッセージ：' . $mysqli->error . "\n";
     }
 
-    // リソース解放
     $statement->close();
     $mysqli->close();
 
@@ -58,13 +53,11 @@ function createTravelData(array $data)
  * DBから指定した都道府県の旅行情報データをすべて取得する
  *
  * @param string $prefecture_id
- * @return array|bool
+ * @return array
  */
-function findTravelData($prefecture_id)
-{
+function findTravelData($prefecture_id) {
     $mysqli = getDBConnection();
 
-    // 指定した都道府県IDで絞り込む（テーブル名はバッククオートで囲む）
     $query = 'SELECT * FROM `travel-trip-nkou` WHERE prefecture_id = ?';
     $stmt = $mysqli->prepare($query);
     if (!$stmt) {
@@ -79,4 +72,3 @@ function findTravelData($prefecture_id)
 
     return $data;
 }
-?>

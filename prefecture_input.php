@@ -2,6 +2,7 @@
 // prefecture_input.php
 require_once 'db.php';
 
+// 都道府県の名称一覧
 $prefectureNames = [
     '1'  => '北海道',
     '2'  => '青森県',
@@ -66,13 +67,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $prefecture_id = trim($_POST['prefecture_id'] ?? '');
     $title         = trim($_POST['title'] ?? '');
     $description   = trim($_POST['description'] ?? '');
+    $url           = trim($_POST['url'] ?? '');
 
-    // 入力チェック
-    if ($prefecture_id !== '' && $title !== '' && $description !== '') {
+    // すべての項目が入力されているかチェック（URL も必須）
+    if ($prefecture_id !== '' && $title !== '' && $description !== '' && $url !== '') {
         $data = [
             'prefecture_id' => $prefecture_id,
             'title'         => $title,
             'description'   => $description,
+            'url'           => $url,
         ];
         if (createTravelData($data)) {
             $message = "入力が保存されました。";
@@ -89,30 +92,129 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <title>データ入力 (<?= htmlspecialchars($prefectureName, ENT_QUOTES, 'UTF-8') ?>)</title>
+    <!-- Bootstrap CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+      /* フォームやマップのレイアウト調整 */
+      #map {
+          max-width: 500px;
+          margin: 20px auto;
+      }
+      .svg-container {
+          text-align: center;
+      }
+    </style>
 </head>
 <body>
-    <h1>データ入力 (<?= htmlspecialchars($prefectureName, ENT_QUOTES, 'UTF-8') ?>)</h1>
-    <?php if ($message): ?>
-        <p><?= htmlspecialchars($message, ENT_QUOTES, 'UTF-8') ?></p>
-    <?php endif; ?>
-    <form action="" method="POST">
-        <!-- 都道府県IDは隠しフィールドにして固定化 -->
-        <input type="hidden" name="prefecture_id" value="<?= htmlspecialchars($prefecture_id, ENT_QUOTES, 'UTF-8') ?>">
-        <p>都道府県: <?= htmlspecialchars($prefectureName, ENT_QUOTES, 'UTF-8') ?></p>
+    <div class="container my-4">
+        <h1 class="mb-4">データ入力 (<?= htmlspecialchars($prefectureName, ENT_QUOTES, 'UTF-8') ?>)</h1>
+        
+        <?php if ($message): ?>
+            <div class="alert alert-info"><?= htmlspecialchars($message, ENT_QUOTES, 'UTF-8') ?></div>
+        <?php endif; ?>
 
-        <label for="title">タイトル:</label><br>
-        <input type="text" name="title" id="title" required><br><br>
+        <form action="" method="POST" class="mb-4">
+            <!-- 都道府県IDは隠しフィールド -->
+            <input type="hidden" name="prefecture_id" value="<?= htmlspecialchars($prefecture_id, ENT_QUOTES, 'UTF-8') ?>">
+            <div class="mb-3">
+                <label class="form-label">都道府県</label>
+                <p class="form-control-plaintext"><?= htmlspecialchars($prefectureName, ENT_QUOTES, 'UTF-8') ?></p>
+            </div>
+            <div class="mb-3">
+                <label for="title" class="form-label">場所</label>
+                <input type="text" name="title" id="title" class="form-control" placeholder="場所を入力" required>
+            </div>
+            <div class="mb-3">
+                <label for="description" class="form-label">内容</label>
+                <textarea name="description" id="description" rows="4" class="form-control" placeholder="内容を入力" required></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="url" class="form-label">URL</label>
+                <input type="url" name="url" id="url" class="form-control" placeholder="リンク先のURLを入力" required>
+            </div>
+            <button type="submit" class="btn btn-primary">送信</button>
+        </form>
+        <p>
+            <a href="prefecture_list.php?prefecture_id=<?= urlencode($prefecture_id) ?>" class="btn btn-secondary">入力されたデータを確認する</a>
+        </p>
 
-        <label for="description">説明:</label><br>
-        <textarea name="description" id="description" rows="4" cols="40" required></textarea><br><br>
+        <!-- SVG マップ -->
+        <div class="svg-container">
+          <h2>日本地図</h2>
+          <div id="map"></div>
+        </div>
+    </div>
 
-        <button type="submit">送信</button>
-    </form>
-    <p>
-        <a href="prefecture_list.php?prefecture_id=<?= urlencode($prefecture_id) ?>">入力されたデータを確認する</a>
-    </p>
-    <p>
-        <a href="index.php">Homeに戻る</a>
-    </p>
+    <!-- Bootstrap JS CDN (オプション) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      (async () => {
+        const mapPath = "./map.svg";
+        const container = document.getElementById('map');
+
+        try {
+          const res = await fetch(mapPath);
+          if (!res.ok) {
+            throw new Error(`SVG の読み込みに失敗しました: ${res.status}`);
+          }
+          const svgText = await res.text();
+          container.innerHTML = svgText;
+
+          const prefectures = container.querySelectorAll('.geolonia-svg-map .prefecture');
+          prefectures.forEach(pref => {
+            const titleEl = pref.querySelector('title');
+            let japaneseName = "";
+            if (titleEl) {
+              const parts = titleEl.textContent.split('/');
+              if (parts.length > 0) {
+                japaneseName = parts[0].trim();
+              }
+            }
+
+            // パス要素の中央にテキストを配置
+            const pathEl = pref.querySelector('path');
+            if (pathEl) {
+              const bbox = pathEl.getBBox();
+              const centerX = bbox.x + bbox.width / 2;
+              const centerY = bbox.y + bbox.height / 2;
+
+              const textEl = document.createElementNS("http://www.w3.org/2000/svg", "text");
+              textEl.setAttribute("x", centerX);
+              textEl.setAttribute("y", centerY);
+              textEl.setAttribute("fill", "white");
+              textEl.setAttribute("font-size", "12");
+              textEl.setAttribute("text-anchor", "middle");
+              textEl.setAttribute("dominant-baseline", "middle");
+              textEl.textContent = japaneseName;
+              pref.appendChild(textEl);
+            }
+
+            // クリック時に対応する都道府県の入力画面へ遷移
+            pref.addEventListener('click', event => {
+              const code = event.currentTarget.dataset.code;
+              if (code) {
+                location.href = `prefecture_input.php?prefecture_id=${code}`;
+              }
+            });
+
+            // マウスオーバー時の色変更
+            pref.addEventListener('mouseover', event => {
+              const path = event.currentTarget.querySelector('path');
+              if (path) {
+                path.style.fill = '#00ffee'; 
+              }
+            });
+            pref.addEventListener('mouseleave', event => {
+              const path = event.currentTarget.querySelector('path');
+              if (path) {
+                path.style.fill = '';
+              }
+            });
+          });
+        } catch (error) {
+          console.error(error);
+        }
+      })();
+    </script>
 </body>
 </html>
