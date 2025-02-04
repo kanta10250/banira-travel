@@ -19,7 +19,7 @@ $prefectureNames = [
     '14' => '神奈川県',
     '15' => '新潟県',
     '16' => '富山県',
-    '17' => '石川県',
+    '17'  => '石川県',
     '18' => '福井県',
     '19' => '山梨県',
     '20' => '長野県',
@@ -90,62 +90,110 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>旅行メモ</title>
     <!-- Bootstrap CSS CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
     <style>
-      /* フォームやマップのレイアウト調整 */
+      /* 全体の余白など調整 */
+      body {
+        background-color: #f8f9fa;
+      }
+      h1, h2 {
+        text-align: center;
+      }
+      /* 地図周りのスタイル */
       #map {
-          max-width: 500px;
-          margin: 20px auto;
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
       }
       .svg-container {
-          text-align: center;
+        text-align: center;
+      }
+      .geolonia-svg-map .prefecture path {
+        /* 遷移のアニメーションを入れて、 hover 時に色を変える */
+        transition: fill 0.2s ease-in-out;
+        cursor: pointer;
+      }
+      /* ホバー時の色 */
+      .geolonia-svg-map .prefecture:hover path {
+        fill: #00bcff; /* 薄めの青系 */
+      }
+      /* 選択中の都道府県をハイライト */
+      .geolonia-svg-map .prefecture.selected path {
+        fill: #ff0044; /* ブートストラップのプライマリカラー */
       }
     </style>
 </head>
 <body>
     <div class="container my-4">
-        <h1 class="mb-4">旅行先入力(<?= htmlspecialchars($prefectureName, ENT_QUOTES, 'UTF-8') ?>)</h1>
-        
+
+        <h1 class="mb-4">旅行先入力 (<?= htmlspecialchars($prefectureName, ENT_QUOTES, 'UTF-8') ?>)</h1>
+
+        <!-- メッセージ表示 -->
         <?php if ($message): ?>
-            <div class="alert alert-info"><?= htmlspecialchars($message, ENT_QUOTES, 'UTF-8') ?></div>
+            <div class="alert alert-info text-center"><?= htmlspecialchars($message, ENT_QUOTES, 'UTF-8') ?></div>
         <?php endif; ?>
 
-        <form action="" method="POST" class="mb-4">
-            <!-- 都道府県IDは隠しフィールド -->
-            <input type="hidden" name="prefecture_id" value="<?= htmlspecialchars($prefecture_id, ENT_QUOTES, 'UTF-8') ?>">
-            <div class="mb-3">
-                <label class="form-label">都道府県</label>
-                <p class="form-control-plaintext"><?= htmlspecialchars($prefectureName, ENT_QUOTES, 'UTF-8') ?></p>
-            </div>
-            <div class="mb-3">
-                <label for="title" class="form-label">場所</label>
-                <input type="text" name="title" id="title" class="form-control" placeholder="場所を入力" required>
-            </div>
-            <div class="mb-3">
-                <label for="description" class="form-label">内容</label>
-                <textarea name="description" id="description" rows="4" class="form-control" placeholder="内容を入力" required></textarea>
-            </div>
-            <div class="mb-3">
-                <label for="url" class="form-label">URL</label>
-                <input type="url" name="url" id="url" class="form-control" placeholder="リンク先のURLを入力" required>
-            </div>
-            <button type="submit" class="btn btn-primary">送信</button>
-        </form>
-        <p>
-            <a href="prefecture_list.php?prefecture_id=<?= urlencode($prefecture_id) ?>" class="btn btn-secondary">入力されたデータを確認する</a>
-        </p>
+        <div class="row">
+          <!-- フォーム部分 -->
+          <div class="col-12 col-md-6 mb-4">
+            <div class="card shadow-sm">
+              <div class="card-body">
+                <h2 class="card-title h4 text-center mb-3">旅行データ入力フォーム</h2>
+                <form action="" method="POST">
+                    <!-- 都道府県IDは隠しフィールド -->
+                    <input type="hidden" name="prefecture_id" value="<?= htmlspecialchars($prefecture_id, ENT_QUOTES, 'UTF-8') ?>">
 
-        <!-- SVG マップ -->
-        <div class="svg-container">
-          <h2>日本地図</h2>
-          <div id="map"></div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">都道府県</label>
+                        <p class="form-control-plaintext">
+                          <?= htmlspecialchars($prefectureName, ENT_QUOTES, 'UTF-8') ?>
+                        </p>
+                    </div>
+                    <div class="mb-3">
+                        <label for="title" class="form-label fw-bold">場所</label>
+                        <input type="text" name="title" id="title" class="form-control" placeholder="場所を入力" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label fw-bold">内容</label>
+                        <textarea name="description" id="description" rows="4" class="form-control" placeholder="内容を入力" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="url" class="form-label fw-bold">URL</label>
+                        <input type="url" name="url" id="url" class="form-control" placeholder="リンク先のURLを入力" required>
+                    </div>
+
+                    <div class="text-center">
+                      <button type="submit" class="btn btn-primary px-4">送信</button>
+                    </div>
+                </form>
+                <div class="mt-3 text-center">
+                    <a href="prefecture_list.php?prefecture_id=<?= urlencode($prefecture_id) ?>" class="btn btn-secondary">入力されたデータを確認する</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 地図部分 -->
+          <div class="col-12 col-md-6">
+            <div class="card shadow-sm">
+              <div class="card-body">
+                <h2 class="card-title h4">日本地図</h2>
+                <div class="svg-container">
+                  <div id="map"></div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-    </div>
+
+    </div><!-- container -->
 
     <!-- Bootstrap JS CDN (オプション) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
     <script>
       (async () => {
-        const mapPath = "./map.svg";
+        const mapPath = "./map.svg";  // SVGファイルのパス
         const container = document.getElementById('map');
 
         try {
@@ -156,9 +204,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           const svgText = await res.text();
           container.innerHTML = svgText;
 
+          // SVG の都道府県要素を取得
           const prefectures = container.querySelectorAll('.geolonia-svg-map .prefecture');
+          const currentPrefectureId = "<?= htmlspecialchars($prefecture_id, ENT_QUOTES, 'UTF-8') ?>";
+
           prefectures.forEach(pref => {
+            const code = pref.dataset.code;
             const titleEl = pref.querySelector('title');
+
+            // タイトル文字列から日本語名を抽出
             let japaneseName = "";
             if (titleEl) {
               const parts = titleEl.textContent.split('/');
@@ -167,7 +221,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               }
             }
 
-            // パス要素の中央にテキストを配置
+            // マップ上に都道府県名のテキストを配置
             const pathEl = pref.querySelector('path');
             if (pathEl) {
               const bbox = pathEl.getBBox();
@@ -182,31 +236,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               textEl.setAttribute("text-anchor", "middle");
               textEl.setAttribute("dominant-baseline", "middle");
               textEl.textContent = japaneseName;
+
               pref.appendChild(textEl);
             }
 
+            // 現在の都道府県ならハイライト（selected クラス付与）
+            if (code === currentPrefectureId) {
+              pref.classList.add('selected');
+            }
+
             // クリック時に対応する都道府県の入力画面へ遷移
-            pref.addEventListener('click', event => {
-              const code = event.currentTarget.dataset.code;
+            pref.addEventListener('click', () => {
               if (code) {
                 location.href = `index.php?prefecture_id=${code}`;
               }
             });
-
-            // マウスオーバー時の色変更
-            pref.addEventListener('mouseover', event => {
-              const path = event.currentTarget.querySelector('path');
-              if (path) {
-                path.style.fill = '#00ffee'; 
-              }
-            });
-            pref.addEventListener('mouseleave', event => {
-              const path = event.currentTarget.querySelector('path');
-              if (path) {
-                path.style.fill = '';
-              }
-            });
           });
+
         } catch (error) {
           console.error(error);
         }
