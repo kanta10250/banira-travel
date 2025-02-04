@@ -107,8 +107,8 @@ $data = findTravelData($prefecture_id);
                                     </a>
                                   <?php endif; ?>
                               </td>
-                              <td> <?= date('Y年m月d日', strtotime($row['created_at']))?></td>
-                              <td> <?= date('Y年m月d日', strtotime($row['updated_at']))?></td>
+                              <td><?= htmlspecialchars(date('Y年m月d日', strtotime($row['created_at'])), ENT_QUOTES, 'UTF-8') ?></td>
+                              <td><?= htmlspecialchars(date('Y年m月d日', strtotime($row['updated_at'])), ENT_QUOTES, 'UTF-8') ?></td>
                           </tr>
                       <?php endforeach; ?>
                   </tbody>
