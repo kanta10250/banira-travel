@@ -1,0 +1,79 @@
+/* 全体のスタイル */
+body {
+    background-color: #f8f9fa;
+    font-family: 'Arial', sans-serif;
+}
+
+/* ヘッダーのスタイル */
+h1, h2 {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 1.5rem; /* SP用にフォントサイズを調整 */
+}
+
+/* フォーム部分のスタイル */
+.card {
+    margin-bottom: 20px;
+}
+
+.card-title {
+    font-size: 1.2rem; /* SP用にフォントサイズを調整 */
+}
+
+.form-label {
+    font-weight: bold;
+}
+
+.form-control {
+    font-size: 0.9rem; /* SP用にフォントサイズを調整 */
+}
+
+/* ボタンのスタイル */
+.btn {
+    font-size: 0.9rem; /* SP用にフォントサイズを調整 */
+    padding: 8px 16px; /* SP用にパディングを調整 */
+}
+
+/* テーブルのスタイル */
+.table-responsive {
+    overflow-x: auto;
+}
+
+.table {
+    font-size: 0.9rem; /* SP用にフォントサイズを調整 */
+}
+
+.table th, .table td {
+    padding: 8px; /* SP用にパディングを調整 */
+}
+
+/* 地図部分のスタイル */
+#map {
+    width: 100%;
+    max-width: 100%; /* SP用に最大幅を調整 */
+    height: auto;
+}
+
+.svg-container {
+    text-align: center;
+}
+
+.geolonia-svg-map .prefecture path {
+    transition: fill 0.2s ease-in-out;
+    cursor: pointer;
+}
+
+.geolonia-svg-map .prefecture:hover path {
+    fill: #00bcff;
+}
+
+.geolonia-svg-map .prefecture.selected path {
+    fill: #ff0044;
+}
+
+/* メッセージ表示部分のスタイル */
+.alert {
+    font-size: 0.9rem; /* SP用にフォントサイズを調整 */
+    padding: 10px; /* SP用にパディングを調整 */
+    margin-bottom: 20px;
+}

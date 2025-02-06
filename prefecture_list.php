@@ -63,10 +63,12 @@ $data = findTravelData($prefecture_id);
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>旅行メモ一覧</title>
     <!-- Bootstrap CSS CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="icon" href="favicon.png" type="image/png" />
+    <link rel="stylesheet" href="style.css">
     <style>
       body {
         background-color: #f8f9fa;
