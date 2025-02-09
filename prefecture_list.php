@@ -83,8 +83,8 @@ $data = findTravelData($prefecture_id);
                         <th>場所</th>
                         <th>内容</th>
                         <th>URL</th>
-                        <th>登録日時</th>
-                        <th>更新日時</th>
+                        <th>登録日</th>
+                        <th>更新日</th>
                         <th>操作</th>
                     </tr>
                 </thead>
