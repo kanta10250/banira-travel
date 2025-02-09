@@ -62,69 +62,78 @@ $data = findTravelData($prefecture_id);
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>旅行メモ一覧</title>
-    <!-- Bootstrap CSS CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="icon" href="favicon.png" type="image/png" />
-    <link rel="stylesheet" href="style.css">
-    <style>
-      body {
-        background-color: #f8f9fa;
-      }
-      h1 {
-        text-align: center;
-        margin-top: 20px;
-      }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>旅行メモ一覧</title>
+  <!-- Bootstrap CSS CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="icon" href="favicon.png" type="image/png" />
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+    h1 {
+      text-align: center;
+      margin-top: 20px;
+    }
+  </style>
 </head>
 <body>
-    <div class="container my-4">
-        <h1 class="mb-4">旅行データ一覧 (<?= htmlspecialchars($prefectureName, ENT_QUOTES, 'UTF-8') ?>)</h1>
+  <div class="container my-4">
+      <h1 class="mb-4">旅行データ一覧 (<?= htmlspecialchars($prefectureName, ENT_QUOTES, 'UTF-8') ?>)</h1>
 
-        <?php if (!empty($data)): ?>
-            <div class="table-responsive shadow-sm">
-              <table class="table table-bordered table-striped align-middle">
-                  <thead class="table-dark">
-                      <tr>
-                          <th scope="col">都道府県</th>
-                          <th scope="col">場所</th>
-                          <th scope="col">内容</th>
-                          <th scope="col">URL</th>
-                          <th scope="col">登録日時</th>
-                          <th scope="col">更新日時</th>
-                      </tr>
-                  </thead>
-                  <tbody>
-                      <?php foreach ($data as $row): ?>
-                          <tr>
-                              <td><?= htmlspecialchars($prefectureNames[$row['prefecture_id']] ?? $row['prefecture_id'], ENT_QUOTES, 'UTF-8') ?></td>
-                              <td><?= htmlspecialchars($row['title'], ENT_QUOTES, 'UTF-8') ?></td>
-                              <td><?= nl2br(htmlspecialchars($row['description'], ENT_QUOTES, 'UTF-8')) ?></td>
-                              <td>
-                                  <?php if ($row['url']): ?>
-                                    <a href="<?= htmlspecialchars($row['url'], ENT_QUOTES, 'UTF-8') ?>" target="_blank" rel="noopener noreferrer">
-                                      リンク
-                                    </a>
-                                  <?php endif; ?>
-                              </td>
-                              <td><?= htmlspecialchars(date('Y年m月d日', strtotime($row['created_at'])), ENT_QUOTES, 'UTF-8') ?></td>
-                              <td><?= htmlspecialchars(date('Y年m月d日', strtotime($row['updated_at'])), ENT_QUOTES, 'UTF-8') ?></td>
-                          </tr>
-                      <?php endforeach; ?>
-                  </tbody>
-              </table>
-            </div>
-        <?php else: ?>
-            <div class="alert alert-warning">データは存在しません。</div>
-        <?php endif; ?>
+      <?php if (!empty($data)): ?>
+          <div class="table-responsive shadow-sm">
+            <table class="table table-bordered table-striped align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th scope="col">都道府県</th>
+                        <th scope="col">場所</th>
+                        <th scope="col">内容</th>
+                        <th scope="col">URL</th>
+                        <th scope="col">登録日時</th>
+                        <th scope="col">更新日時</th>
+                        <th scope="col">操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($data as $row): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($prefectureNames[$row['prefecture_id']] ?? $row['prefecture_id'], ENT_QUOTES, 'UTF-8') ?></td>
+                            <td><?= htmlspecialchars($row['title'], ENT_QUOTES, 'UTF-8') ?></td>
+                            <td><?= nl2br(htmlspecialchars($row['description'], ENT_QUOTES, 'UTF-8')) ?></td>
+                            <td>
+                                <?php if ($row['url']): ?>
+                                  <a href="<?= htmlspecialchars($row['url'], ENT_QUOTES, 'UTF-8') ?>" target="_blank" rel="noopener noreferrer">リンク</a>
+                                <?php endif; ?>
+                            </td>
+                            <td><?= htmlspecialchars(date('Y年m月d日', strtotime($row['created_at'])), ENT_QUOTES, 'UTF-8') ?></td>
+                            <td><?= htmlspecialchars(date('Y年m月d日', strtotime($row['updated_at'])), ENT_QUOTES, 'UTF-8') ?></td>
+                            <td>
+                                <!-- 編集ページへ（id と prefecture_id を渡す） -->
+                                <a href="edit.php?id=<?= urlencode($row['id']) ?>&prefecture_id=<?= urlencode($prefecture_id) ?>" class="btn btn-sm btn-primary mb-1">編集</a>
+                                <!-- 削除ページへ -->
+                                <a href="delete.php?id=<?= urlencode($row['id']) ?>&prefecture_id=<?= urlencode($prefecture_id) ?>" 
+                              class="btn btn-sm btn-danger"
+                              onclick="return confirm('本当に削除してよろしいですか？');">
+                              削除
+                            </a>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+          </div>
+      <?php else: ?>
+          <div class="alert alert-warning">データは存在しません。</div>
+      <?php endif; ?>
 
-        <div class="text-center mt-4">
-          <a href="index.php?prefecture_id=<?= urlencode($prefecture_id) ?>" class="btn btn-secondary">データ入力に戻る</a>
-        </div>
-    </div>
-    <!-- Bootstrap JS CDN (オプション) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+      <div class="text-center mt-4">
+        <a href="index.php?prefecture_id=<?= urlencode($prefecture_id) ?>" class="btn btn-secondary">データ入力に戻る</a>
+      </div>
+  </div>
+  <!-- Bootstrap JS CDN (オプション) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

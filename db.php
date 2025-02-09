@@ -1,5 +1,4 @@
 <?php
-// db.php
 
 // Heroku 上で JawsDB MySQL の接続情報が設定されている場合はその情報を使用する
 if (getenv('JAWSDB_URL')) {
@@ -18,7 +17,6 @@ if (getenv('JAWSDB_URL')) {
     define('DB_NAME', 'tra-nkou');
     define('DB_PORT', 3306);
 }
-
 
 /**
  * DBに接続する
@@ -85,4 +83,80 @@ function findTravelData($prefecture_id) {
     $mysqli->close();
 
     return $data;
+}
+
+/**
+ * 指定したIDの旅行情報を取得する
+ *
+ * @param int $id
+ * @return array|null
+ */
+function getTravelDataById($id) {
+    $mysqli = getDBConnection();
+
+    $query = 'SELECT * FROM `travel-trip-nkou` WHERE id = ?';
+    $stmt = $mysqli->prepare($query);
+    if (!$stmt) {
+        die('SQL準備エラー：' . $mysqli->error);
+    }
+    $stmt->bind_param('i', $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $data = $result->fetch_assoc();
+    $stmt->close();
+    $mysqli->close();
+
+    return $data;
+}
+
+/**
+ * 旅行情報を更新する
+ *
+ * @param int   $id
+ * @param array $data
+ * @return bool
+ */
+function updateTravelData($id, array $data) {
+    $mysqli = getDBConnection();
+
+    $query = 'UPDATE `travel-trip-nkou` SET prefecture_id = ?, title = ?, description = ?, url = ?, updated_at = NOW() WHERE id = ?';
+    $stmt = $mysqli->prepare($query);
+    if (!$stmt) {
+        die('SQL準備エラー：' . $mysqli->error);
+    }
+    // prefecture_id, title, description, url は文字列、id は整数
+    $stmt->bind_param('ssssi', $data['prefecture_id'], $data['title'], $data['description'], $data['url'], $id);
+    $result = $stmt->execute();
+    if ($result === false) {
+        echo 'エラーメッセージ：' . $mysqli->error;
+    }
+    $stmt->close();
+    $mysqli->close();
+
+    return $result;
+}
+
+/**
+ * 旅行情報を削除する
+ *
+ * @param int $id
+ * @return bool
+ */
+function deleteTravelData($id) {
+    $mysqli = getDBConnection();
+
+    $query = 'DELETE FROM `travel-trip-nkou` WHERE id = ?';
+    $stmt = $mysqli->prepare($query);
+    if (!$stmt) {
+        die('SQL準備エラー：' . $mysqli->error);
+    }
+    $stmt->bind_param('i', $id);
+    $result = $stmt->execute();
+    if ($result === false) {
+        echo 'エラーメッセージ：' . $mysqli->error;
+    }
+    $stmt->close();
+    $mysqli->close();
+
+    return $result;
 }
