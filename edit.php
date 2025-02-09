@@ -99,7 +99,7 @@ $currentPrefectureName = $prefectureNames[$record['prefecture_id']] ?? $record['
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- style.css の読み込み -->
   <link rel="stylesheet" href="style.css">
-  <link rel="icon" href="favicon.png" type="image/png">
+  <link rel="icon" href="./image/favicon.png" type="image/png">
 </head>
 <body>
   <div class="container my-4">
