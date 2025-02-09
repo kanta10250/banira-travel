@@ -52,16 +52,12 @@ $prefectureNames = [
     '47' => '沖縄県',
 ];
 
-// GET パラメータで編集するレコードのIDを取得
 $id = $_GET['id'] ?? null;
 if (!$id) {
     die('IDが指定されていません。');
 }
 
-// 都道府県ID（一覧画面から渡されたもの）
 $prefecture_id = trim($_GET['prefecture_id'] ?? '');
-
-// 指定したIDのレコードを取得
 $record = getTravelDataById($id);
 if (!$record) {
     die('指定された旅行情報が見つかりません。');
@@ -69,13 +65,11 @@ if (!$record) {
 
 $message = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // フォームから送信された値を取得
     $prefecture_id = trim($_POST['prefecture_id'] ?? '');
     $title         = trim($_POST['title'] ?? '');
     $description   = trim($_POST['description'] ?? '');
     $url           = trim($_POST['url'] ?? '');
 
-    // すべての項目が入力されているかチェック
     if ($prefecture_id !== '' && $title !== '' && $description !== '' && $url !== '') {
         $data = [
             'prefecture_id' => $prefecture_id,
@@ -85,7 +79,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ];
         if (updateTravelData($id, $data)) {
             $message = '更新が保存されました。';
-            // 最新データを再取得
             $record = getTravelDataById($id);
         } else {
             $message = '更新の保存に失敗しました。';
@@ -94,7 +87,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $message = 'すべての項目を入力してください。';
     }
 }
-
 $currentPrefectureName = $prefectureNames[$record['prefecture_id']] ?? $record['prefecture_id'];
 ?>
 <!DOCTYPE html>
@@ -105,20 +97,19 @@ $currentPrefectureName = $prefectureNames[$record['prefecture_id']] ?? $record['
   <title>旅行情報編集</title>
   <!-- Bootstrap CSS CDN -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="icon" href="favicon.png" type="image/png" />
+  <!-- style.css の読み込み -->
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="favicon.png" type="image/png">
 </head>
 <body>
   <div class="container my-4">
       <h1 class="mb-4">旅行情報編集</h1>
-      
       <?php if ($message): ?>
           <div class="alert alert-info"><?= htmlspecialchars($message, ENT_QUOTES, 'UTF-8') ?></div>
       <?php endif; ?>
-      
       <form action="" method="POST">
           <div class="mb-3">
               <label class="form-label">都道府県</label>
-              <!-- 都道府県はセレクトボックスで選択 -->
               <select name="prefecture_id" class="form-select" required>
                   <?php foreach ($prefectureNames as $key => $name): ?>
                       <option value="<?= htmlspecialchars($key, ENT_QUOTES, 'UTF-8') ?>" <?= $record['prefecture_id'] == $key ? 'selected' : '' ?>>
@@ -145,7 +136,7 @@ $currentPrefectureName = $prefectureNames[$record['prefecture_id']] ?? $record['
           </div>
       </form>
   </div>
-  <!-- Bootstrap JS CDN (オプション) -->
+  <!-- Bootstrap JS CDN -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

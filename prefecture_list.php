@@ -67,34 +67,25 @@ $data = findTravelData($prefecture_id);
   <title>旅行メモ一覧</title>
   <!-- Bootstrap CSS CDN -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="icon" href="favicon.png" type="image/png" />
+  <!-- style.css の読み込み -->
   <link rel="stylesheet" href="style.css">
-  <style>
-    body {
-      background-color: #f8f9fa;
-    }
-    h1 {
-      text-align: center;
-      margin-top: 20px;
-    }
-  </style>
+  <link rel="icon" href="favicon.png" type="image/png">
 </head>
 <body>
   <div class="container my-4">
       <h1 class="mb-4">旅行データ一覧 (<?= htmlspecialchars($prefectureName, ENT_QUOTES, 'UTF-8') ?>)</h1>
-
       <?php if (!empty($data)): ?>
           <div class="table-responsive shadow-sm">
             <table class="table table-bordered table-striped align-middle">
                 <thead class="table-dark">
                     <tr>
-                        <th scope="col">都道府県</th>
-                        <th scope="col">場所</th>
-                        <th scope="col">内容</th>
-                        <th scope="col">URL</th>
-                        <th scope="col">登録日時</th>
-                        <th scope="col">更新日時</th>
-                        <th scope="col">操作</th>
+                        <th>都道府県</th>
+                        <th>場所</th>
+                        <th>内容</th>
+                        <th>URL</th>
+                        <th>登録日時</th>
+                        <th>更新日時</th>
+                        <th>操作</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -111,14 +102,10 @@ $data = findTravelData($prefecture_id);
                             <td><?= htmlspecialchars(date('Y年m月d日', strtotime($row['created_at'])), ENT_QUOTES, 'UTF-8') ?></td>
                             <td><?= htmlspecialchars(date('Y年m月d日', strtotime($row['updated_at'])), ENT_QUOTES, 'UTF-8') ?></td>
                             <td>
-                                <!-- 編集ページへ（id と prefecture_id を渡す） -->
+                                <!-- 編集ページへ -->
                                 <a href="edit.php?id=<?= urlencode($row['id']) ?>&prefecture_id=<?= urlencode($prefecture_id) ?>" class="btn btn-sm btn-primary mb-1">編集</a>
-                                <!-- 削除ページへ -->
-                                <a href="delete.php?id=<?= urlencode($row['id']) ?>&prefecture_id=<?= urlencode($prefecture_id) ?>" 
-                              class="btn btn-sm btn-danger"
-                              onclick="return confirm('本当に削除してよろしいですか？');">
-                              削除
-                            </a>
+                                <!-- 削除：クリック時に confirm() で確認後、delete.php へ GET リクエスト -->
+                                <a href="delete.php?id=<?= urlencode($row['id']) ?>&prefecture_id=<?= urlencode($prefecture_id) ?>" class="btn btn-sm btn-danger" onclick="return confirm('本当に削除してよろしいですか？');">削除</a>
                             </td>
                         </tr>
                     <?php endforeach; ?>
@@ -128,12 +115,11 @@ $data = findTravelData($prefecture_id);
       <?php else: ?>
           <div class="alert alert-warning">データは存在しません。</div>
       <?php endif; ?>
-
       <div class="text-center mt-4">
         <a href="index.php?prefecture_id=<?= urlencode($prefecture_id) ?>" class="btn btn-secondary">データ入力に戻る</a>
       </div>
   </div>
-  <!-- Bootstrap JS CDN (オプション) -->
+  <!-- Bootstrap JS CDN -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
