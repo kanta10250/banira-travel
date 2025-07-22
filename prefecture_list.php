@@ -52,7 +52,7 @@ $prefectureNames = [
     '47' => '沖縄県',
 ];
 
-// GET パラメータがなければ、デフォルトで東京都 (ID:13) を利用
+//　デフォルトで東京都 (ID:13) を利用
 $prefecture_id = trim($_GET['prefecture_id'] ?? '13');
 $prefectureName = $prefectureNames[$prefecture_id] ?? $prefecture_id;
 

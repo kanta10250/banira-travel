@@ -1,23 +1,20 @@
-/* 全体のスタイル */
 body {
     background-color: #f8f9fa;
     font-family: 'Arial', sans-serif;
 }
 
-/* ヘッダーのスタイル */
 h1, h2 {
     text-align: center;
     margin-top: 20px;
-    font-size: 1.5rem; /* SP用にフォントサイズを調整 */
+    font-size: 1.5rem;
 }
 
-/* フォーム部分のスタイル */
 .card {
     margin-bottom: 20px;
 }
 
 .card-title {
-    font-size: 1.2rem; /* SP用にフォントサイズを調整 */
+    font-size: 1.2rem;
 }
 
 .form-label {
@@ -25,32 +22,29 @@ h1, h2 {
 }
 
 .form-control {
-    font-size: 0.9rem; /* SP用にフォントサイズを調整 */
+    font-size: 0.9rem;
 }
 
-/* ボタンのスタイル */
 .btn {
-    font-size: 0.9rem; /* SP用にフォントサイズを調整 */
-    padding: 8px 16px; /* SP用にパディングを調整 */
+    font-size: 0.9rem;
+    padding: 8px 16px;
 }
 
-/* テーブルのスタイル */
 .table-responsive {
     overflow-x: auto;
 }
 
 .table {
-    font-size: 0.9rem; /* SP用にフォントサイズを調整 */
+    font-size: 0.9rem;
 }
 
 .table th, .table td {
-    padding: 8px; /* SP用にパディングを調整 */
+    padding: 8px;
 }
 
-/* 地図部分のスタイル */
 #map {
     width: 100%;
-    max-width: 100%; /* SP用に最大幅を調整 */
+    max-width: 100%;
     height: auto;
 }
 
@@ -71,9 +65,8 @@ h1, h2 {
     fill: #ff0044;
 }
 
-/* メッセージ表示部分のスタイル */
 .alert {
-    font-size: 0.9rem; /* SP用にフォントサイズを調整 */
-    padding: 10px; /* SP用にパディングを調整 */
+    font-size: 0.9rem;
+    padding: 10px;
     margin-bottom: 20px;
 }
